@@ -1,12 +1,12 @@
 {
-  "name": "我的露营 Check",
-  "short_name": "露营 Check",
-  "description": "个人露营出发与撤营防遗忘清单",
+  "name": "캠핑 체크",
+  "short_name": "캠핑 체크",
+  "description": "캠핑 출발 전 장비 체크리스트",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f1ea",
   "theme_color": "#4e654d",
-  "lang": "zh-CN",
+  "lang": "ko-KR",
   "orientation": "portrait",
   "icons": [
     {
