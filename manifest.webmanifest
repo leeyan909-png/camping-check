@@ -1,11 +1,11 @@
 {
-  "name": "캠핑 체크",
-  "short_name": "캠핑 체크",
-  "description": "캠핑 출발 전 장비 체크리스트",
+  "name": "캠핑 출발 준비 매니저",
+  "short_name": "캠핑 매니저",
+  "description": "캠핑 장비 자동 체크리스트, 누락 경고, 철수 체크, 개인 장비 편집",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f4f1ea",
-  "theme_color": "#4e654d",
+  "background_color": "#f3f0e9",
+  "theme_color": "#425443",
   "lang": "ko-KR",
   "orientation": "portrait",
   "icons": [
