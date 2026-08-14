@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的露营 Check</title>
+<style>
+:root{--bg:#f4f1ea;--card:#fffdf8;--ink:#292823;--muted:#777268;--line:#ddd7ca;--accent:#4e654d;--accent2:#d8c7a1;--danger:#a64b3c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}
+.app{max-width:760px;margin:auto;padding:18px 14px 90px}
+header{padding:10px 4px 18px}h1{margin:0;font-size:28px;letter-spacing:.5px}.sub{color:var(--muted);margin-top:6px;font-size:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 4px 18px #00000008}
+.modes,.packs,.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.packs{grid-template-columns:repeat(3,1fr)}
+button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 10px;font-size:14px;color:var(--ink);cursor:pointer}
+button.active{background:var(--accent);color:white;border-color:var(--accent)}
+button:active{transform:scale(.98)}
+.progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px}.bar{height:8px;background:#e7e2d8;border-radius:99px;overflow:hidden}.fill{height:100%;background:var(--accent);width:0%;transition:.2s}
+h2{font-size:17px;margin:20px 4px 9px}.item{display:flex;align-items:center;gap:11px;padding:12px 4px;border-bottom:1px solid #eee9df}.item:last-child{border-bottom:0}
+.item input{width:20px;height:20px;accent-color:var(--accent);flex:0 0 auto}.item.done span{text-decoration:line-through;color:#aaa}.tag{margin-left:auto;font-size:11px;color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}.danger{color:var(--danger)}.bottom{position:fixed;left:0;right:0;bottom:0;background:#ffffffed;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px}.bottom-inner{max-width:760px;margin:auto;display:flex;gap:8px}.bottom button{flex:1}
+@media(max-width:520px){.packs{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#4e654d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="露营 Check">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<div class="app">
+<header>
+<h1>🏕️ 我的露营 Check</h1>
+<div class="sub">出发前防遗忘 · 撤营时防遗漏 · 自动保存</div>
+</header>
+
+<div class="panel">
+<div class="small">模式</div>
+<div class="modes" style="margin-top:8px">
+<button id="solo" onclick="setMode('solo')">🧍 单人露营</button>
+<button id="duo" onclick="setMode('duo')">👥 双人露营</button>
+</div>
+</div>
+
+<div class="panel">
+<div class="small">今天增加什么玩法？</div>
+<div class="packs" style="margin-top:8px">
+<button onclick="togglePack('coffee')">☕ 咖啡</button>
+<button onclick="togglePack('movie')">🎬 电影</button>
+<button onclick="togglePack('fire')">🔥 焚火</button>
+<button onclick="togglePack('music')">🎸 音乐</button>
+<button onclick="togglePack('hike')">🥾 徒步</button>
+<button onclick="togglePack('rain')">🌧️ 雨天</button>
+</div>
+</div>
+
+<div class="panel">
+<div class="progress"><strong id="count">0 / 0</strong><span id="status">准备中</span></div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+</div>
+
+<div id="list"></div>
+</div>
+
+<div class="bottom"><div class="bottom-inner">
+<button onclick="checkAll()">全部确认</button>
+<button onclick="resetChecks()">重新检查</button>
+</div></div>
+
+<script>
+const baseSolo = [
+["⛺ 帐篷 / 天幕",["Hubba Hubba","地布","黑胶天幕","地钉包","天幕主杆 / 副杆","营绳 / 自在扣","营锤","备用营钉"]],
+["🪑 桌椅 / IGT",["IGT 二单元桌板","IGT 桌腿","折叠椅","脚撑椅","IGT 一单元板收纳","IGT 连接件 / 侧边配件","IGT 桌脚收纳袋","椅子收纳袋"]],
+["🍳 炊具 / 餐具",["餐具","杯子","Snow Peak 保温杯","炉具","气罐","锅 / 煎锅","锅夹","打火机","厨房剪","菜刀","砧板","料理夹","厨房纸","垃圾袋","洗碗布 / 海绵","洗洁精","保鲜袋 / 密封袋","调味料"]],
+["🛏️ 睡眠",["NEMO Tensor","ROCK 900 睡袋","枕头","睡袋内胆","睡眠眼罩","耳塞"]],
+["💡 电子 / 小物箱",["铝合金收纳箱","营灯","充电线","充电宝","多口充电器","备用电池","手电","头灯","线香","挂钩","小剪刀","扎带","魔术贴","胶带","防蚊用品","防水袋","小毛巾"]],
+["🧼 清洁",["湿巾","厨房纸","垃圾袋","洗洁精","海绵 / 抹布","桌面刷 / 小扫把","纸巾","卫生纸"]],
+["🧊 食品 / 保冷",["冷藏包 / 冰箱","冰袋","饮用水","食材","调味料","咖啡","零食","饮料"]],
+["🔋 电源 / 车辆",["手机","手机充电线","车载充电器","220V 延长线（需要时）","车钥匙","营地预约信息","身份证","钱包","ETC"]],
+["🧯 安全 / 应急",["简易急救包","创可贴","消毒湿巾","防晒","防蚊液"]]
+];
+
+const duoExtra=[
+["👥 双人增加",["第二把椅子","第二套餐具","第二个杯子","第二个保温杯","更多饮用水","更多食材"]]
+];
+
+const packs={
+coffee:["咖啡豆","咖啡磨","手冲器具","咖啡滤纸"],
+movie:["便携投影仪","遥控器","投影仪充电线","投影幕 / 白色幕布"],
+fire:["小型焚火台","薪柴","防火垫","防火手套","灭火器 / 灭火喷雾"],
+music:["吉他","拨片","吉他相关配件"],
+hike:["徒步鞋","登山杖","背包","水袋 / 水瓶","帽子"],
+rain:["雨衣 / 雨伞","帐篷防水检查用品","防水袋","备用毛巾","换洗衣物"]
+};
+
+let mode=localStorage.mode||"solo";
+let selectedPacks=JSON.parse(localStorage.packs||"[]");
+let checks=JSON.parse(localStorage.checks||"{}");
+let retreat=false;
+
+function setMode(m){mode=m;localStorage.mode=m;render()}
+function togglePack(p){selectedPacks=selectedPacks.includes(p)?selectedPacks.filter(x=>x!==p):[...selectedPacks,p];localStorage.packs=JSON.stringify(selectedPacks);render()}
+function key(s){return s.replace(/[^\w\u4e00-\u9fff]/g,"")}
+function toggle(item){checks[key(item)]=!checks[key(item)];localStorage.checks=JSON.stringify(checks);render()}
+function checkAll(){
+  getItems().forEach(x=>checks[key(x)]=true);localStorage.checks=JSON.stringify(checks);render()
+}
+function resetChecks(){checks={};localStorage.checks="{}";render()}
+function getItems(){
+ let arr=[...baseSolo];
+ if(mode==="duo")arr=[...arr,...duoExtra];
+ selectedPacks.forEach(p=>arr.push(["🎯 "+({coffee:"咖啡",movie:"电影",fire:"焚火",music:"音乐",hike:"徒步",rain:"雨天"}[p])+"包",packs[p]]));
+ return arr.flatMap(x=>x[1]);
+}
+function render(){
+ document.getElementById("solo").classList.toggle("active",mode==="solo");
+ document.getElementById("duo").classList.toggle("active",mode==="duo");
+ let arr=[...baseSolo]; if(mode==="duo")arr=[...arr,...duoExtra];
+ selectedPacks.forEach(p=>arr.push(["🎯 "+({coffee:"咖啡",movie:"电影",fire:"焚火",music:"音乐",hike:"徒步",rain:"雨天"}[p])+"包",packs[p]]));
+ let total=0,done=0,html="";
+ arr.forEach(([title,items])=>{
+   html+=`<h2>${title}</h2><div class="panel">`;
+   items.forEach(item=>{total++;let d=!!checks[key(item)];if(d)done++;html+=`<label class="item ${d?'done':''}"><input type="checkbox" ${d?'checked':''} onchange="toggle('${item.replace(/'/g,"\\'")}')"><span>${item}</span></label>`});
+   html+="</div>";
+ });
+ document.getElementById("list").innerHTML=html;
+ document.getElementById("count").textContent=`${done} / ${total}`;
+ document.getElementById("status").textContent=done===total?"🟢 可以出发":"还有 "+(total-done)+" 项";
+ document.getElementById("fill").style.width=(total?done/total*100:0)+"%";
+}
+render();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
