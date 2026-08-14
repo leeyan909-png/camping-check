@@ -65,7 +65,7 @@ summary{cursor:pointer;color:var(--muted);font-size:13px}
 <div class="app">
 <header>
 <h1>🏕️ 캠핑 출발 준비 매니저</h1>
-<div class="sub">이번 캠핑에 필요한 장비만 자동 구성 · 누락 경고 · 철수 체크 · 내 장비 직접 편집</div>
+<div class="sub">이번 캠핑에 필요한 장비만 자동 구성 · 복수 선택 · 누락 경고 · 철수 체크 · 내 장비 직접 편집</div>
 </header>
 
 <div class="card">
@@ -90,8 +90,8 @@ summary{cursor:pointer;color:var(--muted);font-size:13px}
 <div class="choice-title" style="margin-top:12px">타프 선택</div>
 <div id="tarpChoices" class="grid2"></div>
 
-<div class="choice-title" style="margin-top:12px">침낭 선택</div>
-<div id="sleepChoices" class="grid2"></div>
+<div class="choice-title" style="margin-top:12px">체어 선택 · 복수 선택</div>
+<div id="chairChoices" class="grid2"></div>
 
 <div class="choice-title" style="margin-top:12px">취사</div>
 <div class="grid3">
@@ -179,7 +179,7 @@ summary{cursor:pointer;color:var(--muted);font-size:13px}
 <script>
 const STORAGE='camping-manager-v5';
 const DEFAULTS={
- config:{people:1,nights:1,shelter:'hubba',tarp:'black',sleep:'t900',cook:'normal',weather:'normal',packs:[]},
+ config:{people:1,nights:1,shelter:'hubba',tarp:'black',chairs:['sunset'],cook:'normal',weather:'normal',packs:[]},
  mode:'depart',checks:{},kitChecks:{},missed:[],
  categories:[
  '⛺ 텐트 / 타프','🪑 테이블 / 체어 / IGT','🎒 수납 / 운반','🍳 조리 / 식기','🛏️ 취침 장비',
@@ -202,8 +202,14 @@ const DEFAULTS={
   {id:'igtleg',name:'IGT 테이블 다리',cat:'🪑 테이블 / 체어 / IGT',required:true,tags:['camp']},
   {id:'igt1',name:'IGT 1유닛 플레이트',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['camp']},
   {id:'tacticaltable',name:'헬리녹스 택티컬 테이블 M',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['camp']},
-  {id:'helinoxchair',name:'헬리녹스 체어',cat:'🪑 테이블 / 체어 / IGT',required:true,tags:['camp']},
-  {id:'insuschair',name:'인수스 UL-S 체어',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['camp']},
+  {id:'ironsidetable',name:'아이언 보조테이블',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['camp']},
+  {id:'sunset',name:'헬리녹스 선셋체어',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:sunset']},
+  {id:'savanna',name:'헬리녹스 사바나체어',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:savanna']},
+  {id:'cargo_khaki',name:'카고컨테이너 체어 카키',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:cargo_khaki']},
+  {id:'cargo_tan',name:'카고컨테이너 체어 탄',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:cargo_tan']},
+  {id:'kazmi',name:'카즈미 체어',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:kazmi']},
+  {id:'bp_white',name:'백패킹 체어 화이트',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:bp_white']},
+  {id:'bp_orange',name:'백패킹 체어 오렌지',cat:'🪑 테이블 / 체어 / IGT',required:false,tags:['chair:bp_orange']},
 
   {id:'radix',name:'미스테리랜치 래딕스 X 57',cat:'🎒 수납 / 운반',required:false,tags:['hike']},
   {id:'insusdpack',name:'인수스 D팩 6L',cat:'🎒 수납 / 운반',required:false,tags:['camp']},
@@ -225,18 +231,10 @@ const DEFAULTS={
   {id:'seasoning',name:'양념',cat:'🍳 조리 / 식기',required:false,tags:['cook:normal','cook:bbq']},
 
   {id:'tensor',name:'니모 텐서 올시즌 롱와이드',cat:'🛏️ 취침 장비',required:true,tags:['sleep:any']},
-  {id:'t500',name:'트라우마 500 침낭',cat:'🛏️ 취침 장비',required:true,tags:['sleep:t500']},
-  {id:'t900',name:'트라우마 900 침낭',cat:'🛏️ 취침 장비',required:true,tags:['sleep:t900']},
+  {id:'t500',name:'트라우마 500 침낭',cat:'🛏️ 취침 장비',required:true,tags:['sleep:any']},
+  {id:'t900',name:'트라우마 900 침낭',cat:'🛏️ 취침 장비',required:true,tags:['sleep:any']},
   {id:'pillow',name:'캠핑 베개',cat:'🛏️ 취침 장비',required:false,tags:['sleep:any']},
 
-  {id:'hedy3',name:'크레모아 헤디3 헤드랜턴',cat:'💡 조명 / 전자기기',required:false,tags:['camp']},
-  {id:'lantern',name:'캠핑 랜턴',cat:'💡 조명 / 전자기기',required:true,tags:['camp']},
-  {id:'cable',name:'충전 케이블',cat:'💡 조명 / 전자기기',required:false,tags:['camp']},
-  {id:'powerbank',name:'보조배터리',cat:'💡 조명 / 전자기기',required:false,tags:['camp']},
-  {id:'multicharger',name:'멀티 충전기',cat:'💡 조명 / 전자기기',required:false,tags:['camp']},
-  {id:'mosquito',name:'모기향',cat:'💡 조명 / 전자기기',required:false,tags:['summer']},
-  {id:'hook',name:'후크',cat:'💡 조명 / 전자기기',required:false,tags:['camp']},
-  {id:'velcro',name:'벨크로',cat:'💡 조명 / 전자기기',required:false,tags:['camp']},
   {id:'speaker',name:'블루투스 스피커',cat:'💡 조명 / 전자기기',required:false,tags:['music']},
   {id:'projector',name:'미니 프로젝터',cat:'💡 조명 / 전자기기',required:false,tags:['movie']},
   {id:'remote',name:'프로젝터 리모컨',cat:'💡 조명 / 전자기기',required:false,tags:['movie']},
@@ -264,6 +262,7 @@ const DEFAULTS={
   {id:'idcard',name:'신분증',cat:'🔋 전원 / 차량',required:false,tags:['camp']},
   {id:'wallet',name:'지갑',cat:'🔋 전원 / 차량',required:false,tags:['camp']},
 
+  {id:'fireblanket',name:'방화담요',cat:'🧯 안전 / 응급',required:false,tags:['camp']},
   {id:'firstaid',name:'간단 구급함',cat:'🧯 안전 / 응급',required:false,tags:['camp']},
   {id:'bandage',name:'밴드',cat:'🧯 안전 / 응급',required:false,tags:['camp']},
   {id:'sunscreen',name:'선크림',cat:'🧯 안전 / 응급',required:false,tags:['summer','hike']},
@@ -291,7 +290,7 @@ const DEFAULTS={
   {id:'fan',name:'선풍기',cat:'🎯 즐길거리',required:false,tags:['summer']}
  ],
  kits:[
-  {id:'aluboxkit',name:'알루미늄 수납박스',items:['랜턴','충전 케이블','보조배터리','멀티 충전기','모기향','후크','벨크로','방수팩']}
+  {id:'aluboxkit',name:'알루미늄 수납박스',items:['캠핑 랜턴','크레모아 헤디3 헤드랜턴','충전 케이블','보조배터리','멀티 충전기','모기향','후크','벨크로','방수팩','전기파리채','랜턴걸이','랜턴 스탠드','카드게임']}
  ],
  retreat:[
   '팩 전부 회수','스트링 / 스토퍼 회수','타프 폴 회수','텐트 내부 확인','테이블 아래 확인',
@@ -314,11 +313,24 @@ function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
 function setCfg(k,v){state.config[k]=v;save();render()}
 function togglePack(p){let a=state.config.packs||[];state.config.packs=a.includes(p)?a.filter(x=>x!==p):[...a,p];save();render()}
 function clearPacks(){state.config.packs=[];save();render()}
+function toggleChair(ch){
+ let a=state.config.chairs||[];
+ state.config.chairs=a.includes(ch)?a.filter(x=>x!==ch):[...a,ch];
+ save();render()
+}
 function switchMode(m){state.mode=m;save();render()}
 
 const shelterOpts=[['hubba','MSR 허바허바 LT2'],['living','스노우피크 리빙쉘'],['landlock','스노우피크 랜드록']];
 const tarpOpts=[['none','사용 안 함'],['black','블랙코팅 타프'],['buffalo','버팔로 타프']];
-const sleepOpts=[['t500','트라우마 500 침낭'],['t900','트라우마 900 침낭']];
+const chairOpts=[
+ ['sunset','헬리녹스 선셋체어'],
+ ['savanna','헬리녹스 사바나체어'],
+ ['cargo_khaki','카고컨테이너 체어 카키'],
+ ['cargo_tan','카고컨테이너 체어 탄'],
+ ['kazmi','카즈미 체어'],
+ ['bp_white','백패킹 체어 화이트'],
+ ['bp_orange','백패킹 체어 오렌지']
+];
 
 function hasTag(item,tag){return (item.tags||[]).includes(tag)}
 function activeItem(item){
@@ -329,7 +341,8 @@ function activeItem(item){
    if(c.tarp==='none') return false;
    return hasTag(item,'tarp:'+c.tarp)||hasTag(item,'tarp:any');
  }
- if((item.tags||[]).some(t=>t.startsWith('sleep:'))) return c.nights>0 && (hasTag(item,'sleep:any')||hasTag(item,'sleep:'+c.sleep));
+ if((item.tags||[]).some(t=>t.startsWith('chair:'))) return (c.chairs||[]).some(ch=>hasTag(item,'chair:'+ch));
+ if((item.tags||[]).some(t=>t.startsWith('sleep:'))) return c.nights>0 && hasTag(item,'sleep:any');
  if((item.tags||[]).some(t=>t.startsWith('cook:'))) return hasTag(item,'cook:any')||hasTag(item,'cook:'+c.cook);
  if(hasTag(item,'coffee')) return packs.includes('coffee');
  if(hasTag(item,'movie')) return packs.includes('movie');
@@ -348,7 +361,7 @@ const deps=[
  ['burner',['gas','lighter'],'버너를 선택했지만 가스 또는 라이터가 확인되지 않았습니다.'],
  ['blacktarp',['tarppole','guyline','hammer'],'타프를 선택했지만 설치 장비가 모두 확인되지 않았습니다.'],
  ['buffalotarp',['tarppole','guyline','hammer'],'타프를 선택했지만 설치 장비가 모두 확인되지 않았습니다.'],
- ['projector',['remote','cable'],'프로젝터를 선택했지만 리모컨 또는 충전 케이블이 확인되지 않았습니다.'],
+ ['projector',['remote'],'프로젝터를 선택했지만 리모컨이 확인되지 않았습니다.'],
  ['firepit',['wood','firemat','fireglove'],'불멍을 선택했지만 화로 장비가 모두 확인되지 않았습니다.'],
  ['beans',['grinder','dripper'],'커피 장비 일부가 확인되지 않았습니다.'],
  ['t500',['tensor'],'침낭을 선택했지만 매트가 확인되지 않았습니다.'],
@@ -389,7 +402,7 @@ function renderChoices(){
  }
  fill('shelterChoices',shelterOpts,'shelter');
  fill('tarpChoices',tarpOpts,'tarp');
- fill('sleepChoices',sleepOpts,'sleep');
+ document.getElementById('chairChoices').innerHTML=chairOpts.map(([v,n])=>`<button class="${(state.config.chairs||[]).includes(v)?'active':''}" onclick="toggleChair('${v}')">${n}</button>`).join('');
  document.getElementById('people1').classList.toggle('active',state.config.people===1);
  document.getElementById('people2').classList.toggle('active',state.config.people===2);
  document.querySelectorAll('[data-nights]').forEach(b=>b.classList.toggle('active',Number(b.dataset.nights)===state.config.nights));
