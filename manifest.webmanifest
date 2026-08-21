@@ -1,25 +1,15 @@
 {
-  "name": "캠핑 출발 준비 매니저",
-  "short_name": "캠핑 매니저",
-  "description": "캠핑 장비 자동 체크리스트, 누락 경고, 철수 체크, 개인 장비 편집",
+  "name": "CAMPING CHECK",
+  "short_name": "CAMPING CHECK",
+  "description": "GEAR CHECK · QUICK SELECT · MISS ALERT · PACK OUT",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f3f0e9",
-  "theme_color": "#425443",
+  "background_color": "#f5f7fa",
+  "theme_color": "#1F6FE5",
   "lang": "ko-KR",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
   ]
 }
