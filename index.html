@@ -10,112 +10,336 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="캠핑 매니저">
 <link rel="apple-touch-icon" href="icon-192.png">
+
 <style>
 :root{
- --bg:#f3f0e9;--card:#fffdf8;--ink:#272722;--muted:#777166;--line:#ddd6c8;
- --accent:#425443;--accent2:#d8c7a1;--ok:#3d6e4e;--warn:#ad7a2b;--bad:#a64b3c;
+  --bg:#f5f7fa;
+  --panel:#ffffff;
+  --ink:#111111;
+  --muted:#848a92;
+  --line:#e1e5ea;
+  --blue:#1F6FE5;
+  --blue-bright:#4A8CFF;
+  --blue-soft:#EAF2FF;
+  --ok:#2f6b4b;
+  --warn:#9a6b18;
+  --bad:#a3483f;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",sans-serif}
+html{background:var(--bg)}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+  letter-spacing:-.015em;
+}
 button,input,select{font:inherit}
-.app{max-width:820px;margin:auto;padding:16px 14px 110px}
-header{padding:8px 4px 14px}
-h1{margin:0;font-size:26px}.sub{color:var(--muted);font-size:13px;margin-top:6px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 4px 20px #00000008}
+button{cursor:pointer}
+.app{max-width:760px;margin:0 auto;padding:18px 14px 112px}
+header{
+  padding:14px 2px 18px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:16px;
+}
+h1{
+  margin:0;
+  font-size:27px;
+  line-height:1.08;
+  font-weight:850;
+  letter-spacing:-.045em;
+}
+.sub{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:7px;
+  line-height:1.5;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:15px;
+  margin:12px 0;
+}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-button{border:1px solid var(--line);background:white;border-radius:12px;padding:11px 10px;color:var(--ink)}
-button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+button{
+  border:1px solid #d5dae1;
+  background:#fff;
+  border-radius:999px;
+  padding:9px 14px;
+  color:var(--ink);
+  transition:.15s ease;
+}
+button:hover{
+  border-color:var(--blue);
+  background:var(--blue-soft);
+}
+button.active{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+}
 button.ghost{background:transparent}
 button.bad{color:var(--bad)}
-.small{font-size:12px;color:var(--muted)}
-.section-title{font-weight:700;font-size:17px;margin:18px 4px 8px}
-.choice-title{font-size:13px;color:var(--muted);margin-bottom:7px}
-.status{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.badge{font-size:12px;padding:5px 8px;border-radius:999px;border:1px solid var(--line)}
-.badge.ok{color:var(--ok);border-color:#b8d0bf;background:#eef7f0}
-.badge.warn{color:var(--warn);border-color:#ddc89d;background:#fff8e8}
-.badge.bad{color:var(--bad);border-color:#dfb6ae;background:#fff0ed}
-.progress{height:8px;background:#e7e2d8;border-radius:99px;overflow:hidden;margin-top:10px}
-.progress>div{height:100%;background:var(--accent);width:0;transition:.2s}
-.alert{border-left:4px solid var(--warn);background:#fff8e8;padding:10px 12px;border-radius:10px;margin:8px 0;font-size:13px}
-.alert.bad{border-left-color:var(--bad);background:#fff0ed}
-.item{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid #eee8dd}
-.item:last-child{border-bottom:0}.item input{width:20px;height:20px;accent-color:var(--accent)}
-.item .name{flex:1}.item.done .name{text-decoration:line-through;color:#aaa}
-.item .meta{font-size:11px;color:var(--muted)}
-.item .more{border:0;padding:4px 8px;background:transparent;font-size:20px}
-details{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
-summary{cursor:pointer;color:var(--muted);font-size:13px}
-.kit{padding:10px 0}.kit-head{display:flex;align-items:center;gap:10px}.kit-head input{width:20px;height:20px}
-.kit-items{padding:4px 0 0 30px;font-size:12px;color:var(--muted);line-height:1.8}
-.toolbar{position:fixed;left:0;right:0;bottom:0;background:#ffffffee;backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:10px max(10px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
-.toolbar-inner{max-width:820px;margin:auto;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;z-index:20}
-.modal.show{display:flex}.sheet{background:var(--card);width:100%;max-width:820px;margin:auto;border-radius:20px 20px 0 0;padding:18px 14px 24px;max-height:80vh;overflow:auto}
-.sheet h3{margin:0 0 12px}.field{margin:10px 0}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
-.field input,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:white}
+
+.small{font-size:11px;color:var(--muted)}
+.section-title{
+  margin:20px 2px 8px;
+  font-size:15px;
+  font-weight:800;
+  color:var(--ink);
+}
+.choice-title{font-size:12px;color:var(--muted);margin-bottom:6px}
+
+.status{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.status strong{font-size:20px;letter-spacing:-.03em}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  font-size:11px;
+  padding:5px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  white-space:nowrap;
+}
+.badge.ok{color:var(--ok);border-color:#bfd2c5;background:#f4faf6}
+.badge.warn{color:var(--warn);border-color:#d7c79f;background:#fff9ef}
+.badge.bad{color:var(--bad);border-color:#ddb8b2;background:#fff4f2}
+
+.progress{
+  height:5px;
+  background:#edf0f4;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:12px;
+}
+.progress>div{height:100%;background:var(--blue);width:0;transition:.2s}
+
+.alert{
+  border-left:3px solid var(--blue);
+  background:var(--blue-soft);
+  padding:10px 11px;
+  border-radius:8px;
+  margin:9px 0 0;
+  font-size:12px;
+  line-height:1.5;
+}
+.alert.bad{
+  border-left-color:var(--bad);
+  background:#fff4f2;
+  color:var(--bad);
+}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:50px;
+  padding:10px 2px;
+  border-bottom:1px solid #edf0f3;
+}
+.item:last-child{border-bottom:0}
+.item input{width:20px;height:20px;accent-color:var(--blue)}
+.item .name{flex:1;font-size:14px}
+.item.done .name{color:#9aa0a7;text-decoration:none}
+.item.done .name:before{content:"✓ ";color:var(--blue);font-weight:800}
+.item .meta{font-size:10px;color:#a1a6ad;margin-top:3px}
+.item .more{
+  border:0;
+  padding:4px 7px;
+  background:transparent;
+  font-size:18px;
+  color:var(--muted);
+}
+
+details{border-top:1px solid #edf0f3;margin-top:10px;padding-top:8px}
+summary{cursor:pointer;color:var(--muted);font-size:12px}
+.kit{padding:6px 0}
+.kit-head{display:flex;align-items:center;gap:10px}
+.kit-head input{width:20px;height:20px;accent-color:var(--blue)}
+.kit-items{padding:8px 0 0 30px;font-size:11px;color:var(--muted);line-height:1.8}
+
+.quickbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.quickbar button{flex:1;min-width:112px}
+.quickbar button:first-child{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+}
+.quickbar button:first-child:hover{background:var(--blue-bright)}
+
+.searchbox{
+  width:100%;
+  padding:11px 14px;
+  border:1px solid #d4d9df;
+  border-radius:999px;
+  background:#fff;
+  margin-top:10px;
+  outline:none;
+}
+.searchbox:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(31,111,229,.11);
+}
+
+.cat-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin:18px 2px 8px;
+}
+.cat-head .section-title{margin:0}
+.cat-actions{display:flex;gap:6px}
+.cat-actions button{
+  padding:6px 10px;
+  font-size:11px;
+  border-color:#d4d9df;
+}
+.cat-actions button:first-child{
+  color:var(--blue);
+  border-color:#bdd0ee;
+}
+
+.preset-list{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.preset-chip{
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:11px;
+  border-color:#cbd7e8;
+}
+
+.summary-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.summary-box{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px;
+  background:#fafbfc;
+}
+.summary-box:first-child{
+  background:var(--blue-soft);
+  border-color:#d1def3;
+}
+.summary-box strong{
+  display:block;
+  font-size:20px;
+  margin-top:3px;
+  color:var(--blue);
+}
+
+.toolbar{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);
+  padding:10px max(12px,env(safe-area-inset-right))
+          calc(10px + env(safe-area-inset-bottom))
+          max(12px,env(safe-area-inset-left));
+  z-index:10;
+}
+.toolbar-inner{
+  max-width:760px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+.toolbar button{
+  background:#fff;
+  border-radius:12px;
+}
+.toolbar button.active{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(10,14,20,.55);
+  display:none;
+  align-items:flex-end;
+  z-index:20;
+}
+.modal.show{display:flex}
+.sheet{
+  background:var(--panel);
+  width:100%;
+  max-width:760px;
+  margin:auto;
+  border-radius:18px 18px 0 0;
+  padding:20px 16px 28px;
+  max-height:82vh;
+  overflow:auto;
+  border-top:4px solid var(--blue);
+}
+.sheet h3{margin:0 0 14px;font-size:18px}
+.field{margin:12px 0}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
+.field input,.field select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d4d9df;
+  border-radius:10px;
+  background:#fff;
+}
+.field input:focus,.field select:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(31,111,229,.10);
+}
 .sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.history{font-size:12px;color:var(--warn)}
-@media(max-width:560px){.grid3{grid-template-columns:1fr 1fr}.toolbar-inner{grid-template-columns:1fr 1fr 1fr}h1{font-size:23px}}
+.history{font-size:11px;color:var(--blue)}
+
+@media(max-width:560px){
+  .grid3{grid-template-columns:1fr 1fr}
+  .toolbar-inner{grid-template-columns:1fr 1fr 1fr}
+  h1{font-size:23px}
+  .card{padding:14px}
+}
 </style>
+
 </head>
 <body>
 <div class="app">
 <header>
-<h1>🏕️ 캠핑 출발 준비 매니저</h1>
-<div class="sub">이번 캠핑에 필요한 장비만 자동 구성 · 복수 선택 · 누락 경고 · 철수 체크 · 내 장비 직접 편집</div>
+<h1>CAMPING CHECK</h1>
+<div class="sub">GEAR CHECK · QUICK SELECT · MISS ALERT · PACK OUT</div>
 </header>
 
 <div class="card">
-<div class="section-title" style="margin-top:0">STEP 1 · 이번 캠핑 설정</div>
+<div class="section-title" style="margin-top:0">빠른 체크</div>
+<div class="small">설정 단계 없이 아래 장비를 바로 체크하세요. 여러 항목은 한 번에 선택·해제할 수 있습니다.</div>
 
-<div class="choice-title">인원</div>
-<div class="grid2">
-<button id="people1" onclick="setCfg('people',1)">🧍 1인</button>
-<button id="people2" onclick="setCfg('people',2)">👥 2인</button>
+<div class="quickbar" style="margin-top:10px">
+<button onclick="selectAllVisible()">✓ 전체 선택</button>
+<button onclick="clearAllVisible()">－ 전체 해제</button>
+<button onclick="newCamping()">↻ 새 캠핑 시작</button>
 </div>
 
-<div class="choice-title" style="margin-top:12px">숙박</div>
-<div class="grid3">
-<button data-nights="0" onclick="setCfg('nights',0)">당일</button>
-<button data-nights="1" onclick="setCfg('nights',1)">1박</button>
-<button data-nights="2" onclick="setCfg('nights',2)">2박+</button>
+<div class="quickbar" style="margin-top:8px">
+<button onclick="loadLastTrip()">지난번 그대로</button>
+<button onclick="savePreset()">현재 선택 저장</button>
 </div>
 
-<div class="choice-title" style="margin-top:12px">텐트 / 쉘터 선택</div>
-<div id="shelterChoices" class="grid2"></div>
+<div id="presetList" class="preset-list"></div>
 
-<div class="choice-title" style="margin-top:12px">타프 선택</div>
-<div id="tarpChoices" class="grid2"></div>
+<input id="gearSearch" class="searchbox" type="search" placeholder="장비 검색" oninput="renderChecklist()">
 
-<div class="choice-title" style="margin-top:12px">체어 선택 · 복수 선택</div>
-<div id="chairChoices" class="grid2"></div>
-
-<div class="choice-title" style="margin-top:12px">취사</div>
-<div class="grid3">
-<button data-cook="simple" onclick="setCfg('cook','simple')">간단식</button>
-<button data-cook="normal" onclick="setCfg('cook','normal')">일반 취사</button>
-<button data-cook="bbq" onclick="setCfg('cook','bbq')">바비큐</button>
-</div>
-
-<div class="choice-title" style="margin-top:12px">날씨 / 계절</div>
-<div class="grid3">
-<button data-weather="normal" onclick="setCfg('weather','normal')">☀️ 일반</button>
-<button data-weather="rain" onclick="setCfg('weather','rain')">🌧️ 우천</button>
-<button data-weather="winter" onclick="setCfg('weather','winter')">❄️ 동계</button>
-<button data-weather="summer" onclick="setCfg('weather','summer')">🔥 혹서</button>
-</div>
-
-<div class="choice-title" style="margin-top:12px">즐길거리</div>
-<div class="grid3">
-<button data-pack="coffee" onclick="togglePack('coffee')">☕ 커피</button>
-<button data-pack="movie" onclick="togglePack('movie')">🎬 영화</button>
-<button data-pack="fire" onclick="togglePack('fire')">🔥 불멍</button>
-<button data-pack="music" onclick="togglePack('music')">🎸 음악</button>
-<button data-pack="hike" onclick="togglePack('hike')">🥾 하이킹</button>
-<button data-pack="none" onclick="clearPacks()">선택 안 함</button>
+<div class="summary-row">
+<div class="summary-box"><span class="small">현재 체크</span><strong id="selectedCount">0개</strong></div>
+<div class="summary-box"><span class="small">누락 경고</span><strong id="warningCount">0개</strong></div>
 </div>
 </div>
 
@@ -180,7 +404,7 @@ summary{cursor:pointer;color:var(--muted);font-size:13px}
 const STORAGE='camping-manager-v5';
 const DEFAULTS={
  config:{people:1,nights:1,shelter:'hubba',tarp:'black',chairs:['sunset'],cook:'normal',weather:'normal',packs:[]},
- mode:'depart',checks:{},kitChecks:{},missed:[],
+ mode:'depart',checks:{},kitChecks:{},missed:[],lastTrip:[],presets:[],collapsed:{},
  categories:[
  '⛺ 텐트 / 타프','🪑 테이블 / 체어 / IGT','🎒 수납 / 운반','🍳 조리 / 식기','🛏️ 취침 장비',
  '💡 조명 / 전자기기','🧼 세척 / 위생','🧊 식품 / 보냉','🔋 전원 / 차량','🧯 안전 / 응급','🎯 즐길거리'
@@ -333,27 +557,7 @@ const chairOpts=[
 ];
 
 function hasTag(item,tag){return (item.tags||[]).includes(tag)}
-function activeItem(item){
- const c=state.config;
- const packs=c.packs||[];
- if((item.tags||[]).some(t=>t.startsWith('shelter:'))) return hasTag(item,'shelter:'+c.shelter);
- if((item.tags||[]).some(t=>t.startsWith('tarp:'))){
-   if(c.tarp==='none') return false;
-   return hasTag(item,'tarp:'+c.tarp)||hasTag(item,'tarp:any');
- }
- if((item.tags||[]).some(t=>t.startsWith('chair:'))) return (c.chairs||[]).some(ch=>hasTag(item,'chair:'+ch));
- if((item.tags||[]).some(t=>t.startsWith('sleep:'))) return c.nights>0 && hasTag(item,'sleep:any');
- if((item.tags||[]).some(t=>t.startsWith('cook:'))) return hasTag(item,'cook:any')||hasTag(item,'cook:'+c.cook);
- if(hasTag(item,'coffee')) return packs.includes('coffee');
- if(hasTag(item,'movie')) return packs.includes('movie');
- if(hasTag(item,'fire')) return packs.includes('fire');
- if(hasTag(item,'music')) return packs.includes('music');
- if(hasTag(item,'hike')) return packs.includes('hike');
- if(hasTag(item,'rain')) return c.weather==='rain';
- if(hasTag(item,'winter')) return c.weather==='winter';
- if(hasTag(item,'summer')) return c.weather==='summer';
- return hasTag(item,'camp') || (item.tags||[]).length===0;
-}
+function activeItem(item){ return true; }
 function activeItems(){return state.items.filter(activeItem)}
 
 const deps=[
@@ -368,10 +572,10 @@ const deps=[
  ['t900',['tensor'],'침낭을 선택했지만 매트가 확인되지 않았습니다.']
 ];
 function dependencyAlerts(){
- const activeIds=new Set(activeItems().map(i=>i.id)), out=[];
+ const out=[];
  for(const [root,reqs,msg] of deps){
-  if(activeIds.has(root) && !state.checks[root]) continue;
-  if(activeIds.has(root) && reqs.some(id=>activeIds.has(id) && !state.checks[id])) out.push(msg);
+   if(!state.checks[root]) continue;
+   if(reqs.some(id=>!state.checks[id])) out.push(msg);
  }
  return [...new Set(out)];
 }
@@ -396,21 +600,6 @@ function toggleKit(id){
  save();render();
 }
 
-function renderChoices(){
- function fill(id,opts,key){
-  document.getElementById(id).innerHTML=opts.map(([v,n])=>`<button class="${state.config[key]===v?'active':''}" onclick="setCfg('${key}','${v}')">${n}</button>`).join('');
- }
- fill('shelterChoices',shelterOpts,'shelter');
- fill('tarpChoices',tarpOpts,'tarp');
- document.getElementById('chairChoices').innerHTML=chairOpts.map(([v,n])=>`<button class="${(state.config.chairs||[]).includes(v)?'active':''}" onclick="toggleChair('${v}')">${n}</button>`).join('');
- document.getElementById('people1').classList.toggle('active',state.config.people===1);
- document.getElementById('people2').classList.toggle('active',state.config.people===2);
- document.querySelectorAll('[data-nights]').forEach(b=>b.classList.toggle('active',Number(b.dataset.nights)===state.config.nights));
- document.querySelectorAll('[data-cook]').forEach(b=>b.classList.toggle('active',b.dataset.cook===state.config.cook));
- document.querySelectorAll('[data-weather]').forEach(b=>b.classList.toggle('active',b.dataset.weather===state.config.weather));
- document.querySelectorAll('[data-pack]').forEach(b=>{if(b.dataset.pack!=='none')b.classList.toggle('active',(state.config.packs||[]).includes(b.dataset.pack))});
-}
-
 function renderKits(){
  if(state.mode==='retreat'){document.getElementById('kitsArea').innerHTML='';return}
  document.getElementById('kitsArea').innerHTML=`<div class="card"><div class="section-title" style="margin-top:0">🧰 상시 수납박스</div>
@@ -424,34 +613,52 @@ function renderChecklist(){
   root.innerHTML=`<div class="section-title">🏕️ 철수 체크</div><div class="card">${state.retreat.map((n,i)=>`<div class="item ${state.checks['retreat_'+i]?'done':''}"><input type="checkbox" ${state.checks['retreat_'+i]?'checked':''} onchange="toggleRetreat(${i})"><div class="name">${n}</div></div>`).join('')}</div>`;
   return;
  }
- const items=activeItems();
+ const q=(document.getElementById('gearSearch')?.value||'').trim().toLowerCase();
+ const items=activeItems().filter(i=>!q || i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q));
  let html='';
  for(const cat of state.categories){
    const arr=items.filter(i=>i.cat===cat);
    if(!arr.length) continue;
-   html+=`<div class="section-title">${cat}</div><div class="card">${arr.map(checkboxItem).join('')}</div>`;
+   html+=`<div class="cat-head">
+     <div class="section-title">${cat}</div>
+     <div class="cat-actions">
+       <button onclick="selectCategory('${cat.replace(/'/g,"\'")}')">전체 선택</button>
+       <button onclick="clearCategory('${cat.replace(/'/g,"\'")}')">해제</button>
+     </div>
+   </div>
+   <div class="card">${arr.map(checkboxItem).join('')}</div>`;
  }
- root.innerHTML=html;
+ root.innerHTML=html || '<div class="card"><div class="small">검색 결과가 없습니다.</div></div>';
 }
 
 function renderStatus(){
- let total=0,done=0,requiredMissing=0;
+ let total=0,done=0;
  if(state.mode==='retreat'){
-  total=state.retreat.length;done=state.retreat.filter((_,i)=>state.checks['retreat_'+i]).length;requiredMissing=total-done;
+  total=state.retreat.length;
+  done=state.retreat.filter((_,i)=>state.checks['retreat_'+i]).length;
  }else{
-  const items=activeItems(); total=items.length; done=items.filter(i=>state.checks[i.id]).length; requiredMissing=items.filter(i=>i.required&&!state.checks[i.id]).length;
+  const items=activeItems();
+  total=items.length;
+  done=items.filter(i=>state.checks[i.id]).length;
  }
  const dep=state.mode==='depart'?dependencyAlerts():[];
  let txt,badge,cls;
- if(requiredMissing>0){txt='출발 불가';badge=`필수 ${requiredMissing}개 미확인`;cls='bad'}
- else if(dep.length || done<total){txt='확인 필요';badge=`선택 ${Math.max(0,total-done)}개 미확인`;cls='warn'}
- else {txt=state.mode==='depart'?'출발 준비 완료':'철수 완료';badge='완료';cls='ok'}
+ if(state.mode==='retreat'){
+   if(done===total){txt='철수 완료';badge='완료';cls='ok'}
+   else {txt='철수 체크 중';badge=`${total-done}개 남음`;cls='warn'}
+ }else{
+   if(dep.length){txt='누락 확인 필요';badge=`경고 ${dep.length}개`;cls='bad'}
+   else if(done>0){txt='누락 경고 없음';badge=`${done}개 체크`;cls='ok'}
+   else {txt='체크 시작 전';badge='장비를 선택하세요';cls='warn'}
+ }
  document.getElementById('statusText').textContent=txt;
  const b=document.getElementById('statusBadge');b.textContent=badge;b.className='badge '+cls;
  document.getElementById('progressText').textContent=`${done} / ${total}`;
  document.getElementById('progressFill').style.width=(total?done/total*100:0)+'%';
  const alerts=[...dep,...missedAlerts()];
  document.getElementById('alerts').innerHTML=alerts.map((a,i)=>`<div class="alert ${i<dep.length?'bad':''}">${a}</div>`).join('');
+ const sc=document.getElementById('selectedCount'); if(sc) sc.textContent=done+'개';
+ const wc=document.getElementById('warningCount'); if(wc) wc.textContent=dep.length+'개';
 }
 
 function renderMissed(){
@@ -460,8 +667,74 @@ function renderMissed(){
  el.innerHTML=state.missed.map((m,i)=>`<div class="item"><div class="name">${m.name}<div class="meta">${m.count}회 기록</div></div><button class="bad ghost" onclick="removeMissed(${i})">삭제</button></div>`).join('');
 }
 
+
+function selectedIds(){
+ return activeItems().filter(i=>state.checks[i.id]).map(i=>i.id);
+}
+function selectAllVisible(){
+ const q=(document.getElementById('gearSearch')?.value||'').trim().toLowerCase();
+ activeItems().filter(i=>!q || i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q))
+   .forEach(i=>state.checks[i.id]=true);
+ save();render();
+}
+function clearAllVisible(){
+ const q=(document.getElementById('gearSearch')?.value||'').trim().toLowerCase();
+ activeItems().filter(i=>!q || i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q))
+   .forEach(i=>delete state.checks[i.id]);
+ save();render();
+}
+function selectCategory(cat){
+ activeItems().filter(i=>i.cat===cat).forEach(i=>state.checks[i.id]=true);
+ save();render();
+}
+function clearCategory(cat){
+ activeItems().filter(i=>i.cat===cat).forEach(i=>delete state.checks[i.id]);
+ save();render();
+}
+function newCamping(){
+ const current=selectedIds();
+ if(current.length) state.lastTrip=current;
+ state.checks={};
+ state.kitChecks={};
+ state.mode='depart';
+ save();render();
+}
+function loadLastTrip(){
+ const ids=state.lastTrip||[];
+ if(!ids.length){alert('저장된 지난 캠핑 선택이 없습니다.');return}
+ state.checks={};
+ ids.forEach(id=>state.checks[id]=true);
+ save();render();
+}
+function savePreset(){
+ const ids=selectedIds();
+ if(!ids.length){alert('먼저 저장할 장비를 체크하세요.');return}
+ const name=prompt('프리셋 이름을 입력하세요.','솔로 기본');
+ if(!name) return;
+ state.presets=state.presets||[];
+ const old=state.presets.find(p=>p.name===name);
+ if(old) old.ids=ids;
+ else state.presets.push({name,ids});
+ save();render();
+}
+function loadPreset(i){
+ const p=(state.presets||[])[i]; if(!p)return;
+ state.checks={};
+ p.ids.forEach(id=>state.checks[id]=true);
+ save();render();
+}
+function deletePreset(i){
+ if(!confirm('이 프리셋을 삭제할까요?'))return;
+ state.presets.splice(i,1);save();render();
+}
+function renderPresets(){
+ const el=document.getElementById('presetList'); if(!el)return;
+ const ps=state.presets||[];
+ el.innerHTML=ps.map((p,i)=>`<button class="preset-chip" onclick="loadPreset(${i})">${p.name}</button><button class="preset-chip bad" onclick="deletePreset(${i})">×</button>`).join('');
+}
+
 function render(){
- renderChoices();renderKits();renderChecklist();renderStatus();renderMissed();
+ renderKits();renderChecklist();renderStatus();renderMissed();renderPresets();
  document.getElementById('departBtn').classList.toggle('active',state.mode==='depart');
  document.getElementById('retreatBtn').classList.toggle('active',state.mode==='retreat');
 }
